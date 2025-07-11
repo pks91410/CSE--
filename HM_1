@@ -1,0 +1,149 @@
+1-1
+import random as rnd
+numbers1 = [rnd.random() for i in range(100)]
+#random() 0~1 무작위 실수 1개, range(100) = 0~99 숫자
+numbers1.sort() #오름차순 정리
+print(numbers1)
+print(len(numbers1))
+
+numbers2 = [rnd.randint(0,100) for i in range(100)]
+# 임의의 정수를 뽑으므로 겹칠 수 있음. randint(a,b)는 a~b 정수
+#randrange(a,b) a ~ b-1 정수
+numbers2.sort()  #오름차순 정리
+print(numbers2)
+print(len(numbers2))
+
+numbers3 = []
+for i in range(100):
+    numbers3.append(rnd.random())
+numbers3.sort()
+print(numbers3)
+print(len(numbers3))
+
+===========================================================
+
+1-2
+import random as rnd
+from numpy import *
+
+A = []
+B = []
+for _ in range(4):
+    row1 = []
+    row2 = []
+    for _ in range(4):
+        row1.append(rnd.random())
+        row2.append(rnd.random()) #0포함X -> det()=0이면 역행렬 존재X을 수 있음.
+    A.append(row1)
+    B.append(row2)
+
+A = array(A)
+B = array(B)
+C = dot(A,B)
+
+print('\nA=',A)
+print('\nB= ',B)
+print('\nC= ',C)
+
+c_dev = linalg.det(C)
+c_inv = linalg.inv(C)
+
+print('\ndet(C)=', c_dev)
+print('\ninv(C)=', c_inv)
+identy_c = dot(C,c_inv)
+print('\nC*inv(C)=', identy_c)
+print('\nIs identity (within tolerance)?', allclose(identy_c, eye(4)))
+
+============================================================================================
+2-1 bisection
+[-10,-1],[-1,0],[0,10]
+from numpy import abs
+
+def f(x):
+    return x**5-9*x**4-x**3+17*x**2-8*x-8
+
+def bisection(a,b,tol):
+    i = 0
+    while abs(b-a) > tol:
+        i += 1
+        m = (a+b)/2
+        if f(m) * f(a) < 0:
+            b = m
+        else:
+            a = m
+        print('%d번째 반복결과 x:'%(i),m)
+    return m
+
+a_1 = -10
+b_1 = -1
+
+a_2 = -1
+b_2 = 0
+
+a_3 = 0
+b_3 = 10
+
+tol = 1e-8
+x_1 = bisection(a_1,b_1,tol)
+x_2 = bisection(a_2,b_2,tol)
+x_3 = bisection(a_3,b_3,tol)
+
+==========================================================
+2-2 Newton's Method
+from numpy import abs
+def f(x):
+    return x**5-9*x**4-x**3+17*x**2-8*x-8
+def fp(x):
+    return 5*x**4-36*x**3-3*x**2+34*x-8
+def newton(x,tol):
+    i = 0
+    eps = 1 # eps 초기값,을 tol보다 크게 주므로써 while문 실행가능하게 함.
+    while eps > tol:
+        i += 1
+        xo = x
+        x = xo - f(xo)/fp(xo) #== x = x - f(x)/fp(x)
+        eps = abs((x-xo)/x)
+        print (i, x)
+    return x
+
+x0_1 = -10
+x0_2 = -0.1
+x0_3 = 10
+x0_0 = 0
+tol = 1e-8
+x1 = newton(x0_1,tol)
+x2 = newton(x0_2,tol)
+x3 = newton(x0_3,tol)
+#2-3.
+x0 = newton(x0_0,tol) # x= 0, -1, 1이 반복되면서 해가 수렴하지 않는다. 발산
+==========================================================================
+4. secant method
+from numpy import abs
+def f(x):
+    return x**5-9*x**4-x**3+17*x**2-8*x-8
+
+def secant(x_1,x_2,tol):
+    i = 0
+    eps = 1
+    while eps > tol:
+        i += 1
+        x = x_2 - f(x_2)*(x_2-x_1)/(f(x_2)-f(x_1))
+        x_1 = x_2
+        x_2 = x
+        eps = abs((x-x_1)/x)
+        print(i,x)
+    return x
+
+x1_1 = -10
+x1_2 = -9.9
+
+x2_1 = -0.1
+x2_2 = -0.2
+
+x3_1 = 10
+x3_2 = 9.9
+
+tol = 1e-8
+x1 = secant(x1_1,x1_2,tol)
+x2 = secant(x2_1,x2_2,tol)
+x3 = secant(x3_1,x3_2,tol)
